@@ -16,3 +16,6 @@ Enter the list of folder names to hide in the settings menu, **one folder per li
 
 ### Manually installing the plugin
 - Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
+
+## License
+MIT License, see [LICENSE.md](./LICENSE.md)
