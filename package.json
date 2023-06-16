@@ -10,7 +10,7 @@
 	},
 	"keywords": [],
 	"author": "jonasdoesthings.com",
-	"repository": "https://github.com/k4ds3/obsidian-hide-folders",
+	"repository": "https://github.com/JonasDoesThings/obsidian-hide-folders",
 	"license": "MIT",
 	"devDependencies": {
 		"@types/node": "^16.11.6",
