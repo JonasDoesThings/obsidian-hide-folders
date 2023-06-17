@@ -38,7 +38,7 @@ export default class HideFoldersPlugin extends Plugin {
   }
 
   async onload() {
-    console.log("loading plugin obsidian-hide-folders");
+    console.log("loading plugin hide-folders");
 
     await this.loadSettings();
 
@@ -99,7 +99,7 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
     const {containerEl} = this;
 
     containerEl.empty();
-    containerEl.createEl("h2", {text: "Settings for obsidian-hide-folders."});
+    containerEl.createEl("h2", {text: "Settings for hidef-folders."});
 
     new Setting(containerEl)
       .setName("Folders to Hide")
