@@ -99,7 +99,6 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
     const {containerEl} = this;
 
     containerEl.empty();
-    containerEl.createEl("h2", {text: "Settings for hidef-folders."});
 
     new Setting(containerEl)
       .setName("Folders to Hide")
