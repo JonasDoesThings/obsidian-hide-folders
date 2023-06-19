@@ -31,9 +31,9 @@ export default class HideFoldersPlugin extends Plugin {
 
   async toggleFunctionality() {
     this.settings.areFoldersHidden = !this.settings.areFoldersHidden;
-    this.ribbonIconButton.ariaLabel = this.settings.areFoldersHidden ? "Show Hidden Folders" : "Hide Hidden Folders Again";
+    this.ribbonIconButton.ariaLabel = this.settings.areFoldersHidden ? "Show hidden folders" : "Hide hidden folders again";
     setIcon(this.ribbonIconButton, this.settings.areFoldersHidden ? "eye" : "eye-off");
-    this.statusBarItem.innerHTML = this.settings.areFoldersHidden ? "Configured Folders are Hidden" : "";
+    this.statusBarItem.innerHTML = this.settings.areFoldersHidden ? "Configured folders are hidden" : "";
     await this.processFolders();
   }
 
@@ -43,13 +43,13 @@ export default class HideFoldersPlugin extends Plugin {
     await this.loadSettings();
 
     // This creates an icon in the left ribbon.
-    this.ribbonIconButton = this.addRibbonIcon(this.settings.areFoldersHidden ? "eye" : "eye-off", this.settings.areFoldersHidden ? "Show Hidden Folders" : "Hide Hidden Folders Again", (evt: MouseEvent) => {
+    this.ribbonIconButton = this.addRibbonIcon(this.settings.areFoldersHidden ? "eye" : "eye-off", this.settings.areFoldersHidden ? "Show hidden folders" : "Hide hidden folders again", (evt: MouseEvent) => {
       this.toggleFunctionality();
     });
 
     // This adds a status bar item to the bottom of the app. Does not work on mobile apps.
     this.statusBarItem = this.addStatusBarItem();
-    this.statusBarItem.setText(this.settings.areFoldersHidden ? "Attachment Folders are Hidden" : "");
+    this.statusBarItem.setText(this.settings.areFoldersHidden ? "Attachment folders are hidden" : "");
 
     // This adds a simple command that can be triggered anywhere
     this.addCommand({
@@ -101,7 +101,7 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     new Setting(containerEl)
-      .setName("Folders to Hide")
+      .setName("Folders to hide")
       .setDesc("The name of the folders to hide, seperated by new lines")
       .addTextArea(text => text
         .setPlaceholder("attachments")
@@ -112,7 +112,7 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
       }));
 
     new Setting(containerEl)
-      .setName("Hide Folders")
+      .setName("Hide folders")
       .setDesc("If the configured folders should be hidden or not")
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.areFoldersHidden)
