@@ -8,6 +8,12 @@ Enter the list of folder names to hide in the settings menu, **one folder per li
 
 ![Screenshot of the Plugin Settings Screen in Obsidian.md](./docs/assets/settings-screenshot.png)  
 
+You can then also use a sidebar button to quickly toggle the visibility without having to enter the settings menu:  
+![Screenshot of the Plugin's Sidebar Button in Obsidian.md](docs/assets/sidebar-screenshot.png)
+
+Using the command palette is also supported:
+![Screenshot of the Plugin's Command Palette Action in Obsidian..md](docs/assets/command-palette-screenshot.png)
+
 ## Development
 ### Setup
 - Clone this repo.
