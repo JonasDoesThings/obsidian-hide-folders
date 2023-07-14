@@ -3,7 +3,7 @@
 	"name": "Hide Folders",
 	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "Hides & Toggles configured folders (i.e. attachments folders).",
+	"description": "Hides & Toggles configured folders (e.g. attachments folders).",
 	"author": "JonasDoesThings",
 	"authorUrl": "https://jonasdoesthings.com/",
 	"isDesktopOnly": false
