@@ -2,11 +2,13 @@ import {App, Plugin, PluginSettingTab, setIcon, Setting} from "obsidian";
 
 interface HideFoldersPluginSettings {
   areFoldersHidden: boolean;
+  matchCaseInsensitive: boolean;
   attachmentFolderNames: string[];
 }
 
 const DEFAULT_SETTINGS: HideFoldersPluginSettings = {
   areFoldersHidden: true,
+  matchCaseInsensitive: true,
   attachmentFolderNames: ["attachments"],
 };
 
@@ -18,7 +20,7 @@ export default class HideFoldersPlugin extends Plugin {
 
   async processFolders() {
     this.settings.attachmentFolderNames.forEach(folderName => {
-      const folderElements = document.querySelectorAll(`[data-path$="/${folderName.trim()}"]`);
+      const folderElements = document.querySelectorAll(`[data-path$="/${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}]`);
       folderElements.forEach((folder) => {
         if (!folder || !folder.parentElement) {
           return;
@@ -108,6 +110,16 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
         .setValue(this.plugin.settings.attachmentFolderNames.join("\n"))
         .onChange(async (value) => {
           this.plugin.settings.attachmentFolderNames = value.split("\n");
+          await this.plugin.saveSettings();
+      }));
+
+    new Setting(containerEl)
+      .setName("Ignore Upper/lowercase")
+      .setDesc("If enabled, 'SOMEFOLDER', 'someFolder', or 'sOmeFoldEr' will all be treated the same and matched.")
+      .addToggle(toggle => toggle
+        .setValue(this.plugin.settings.matchCaseInsensitive)
+        .onChange(async (value) => {
+          this.plugin.settings.matchCaseInsensitive = value;
           await this.plugin.saveSettings();
       }));
 
