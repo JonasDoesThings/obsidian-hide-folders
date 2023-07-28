@@ -24,7 +24,7 @@ Using the command palette is also supported:
 - `npm run build` to do a one-off build of the project, which produces the files needed for manually installing the plugin.
 
 ### Manually installing the plugin
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.  
+- Copy over the outputted `main.js`, `manifest.json` from the `dist/` folder to your vault `VaultFolder/.obsidian/plugins/obsidian-hide-folders/`.  
 -> Watch Out! You cannot copy-over the raw *main.**ts***. You need to run a build first and then copy over the produced *main.**js***.
 
 ## License
