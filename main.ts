@@ -20,7 +20,10 @@ export default class HideFoldersPlugin extends Plugin {
 
   async processFolders() {
     this.settings.attachmentFolderNames.forEach(folderName => {
-      const folderElements = document.querySelectorAll(`[data-path$="/${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}]`);
+      const folderElements = document.querySelectorAll(
+        `[data-path$="/${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}], [data-path="${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}]`
+      );
+
       folderElements.forEach((folder) => {
         if (!folder || !folder.parentElement) {
           return;
