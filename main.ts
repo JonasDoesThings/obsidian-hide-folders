@@ -19,7 +19,11 @@ export default class HideFoldersPlugin extends Plugin {
   mutationObserver: MutationObserver;
 
   async processFolders() {
+    if(this.settings.attachmentFolderNames.length === 0) return;
+
     this.settings.attachmentFolderNames.forEach(folderName => {
+      if(folderName.trim() === "") return;
+
       const folderElements = document.querySelectorAll(
         `[data-path$="/${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}], [data-path="${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}]`
       );
