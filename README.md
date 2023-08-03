@@ -3,6 +3,10 @@
 A simple plugin for [obsidian.md](https://obsidian.md) that hides configured folders, with the ability to toggle their visibility.  
 This can be used for hiding attachments folders when you don't need them.
 
+## Installation
+Search in the community plugins menu of Obsidian for "Hide Folders" look for the right plugin ("by JonasDoesThings"), there you can install the latest stable version.
+![Screenshot of the Plugin Installation Menu](./docs/assets/installation-screenshot.png)
+
 ## Configuration
 Enter the list of folder names to hide in the settings menu, **one folder per line**.
 
