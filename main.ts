@@ -117,9 +117,9 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Folders to hide")
-      .setDesc("The name of the folders to hide, seperated by new lines")
+      .setDesc("The names of the folders to hide, one per line. Either exact folder-names or endsWith::FOLDERSUFFIX")
       .addTextArea(text => text
-        .setPlaceholder("attachments")
+        .setPlaceholder("attachments\nendsWith::_attachments")
         .setValue(this.plugin.settings.attachmentFolderNames.join("\n"))
         .onChange(async (value) => {
           this.plugin.settings.attachmentFolderNames = value.split("\n");
