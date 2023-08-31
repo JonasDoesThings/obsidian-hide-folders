@@ -1,11 +1,12 @@
 {
 	"name": "obsidian-hide-folders",
-	"version": "1.0.3",
+	"version": "1.1.0",
 	"description": "ObsidianMD plugin that hides & toggles configured folders (e.g. attachments folders).",
 	"main": "main.js",
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production && cp manifest.json dist",
+		"build:testvault": "yarn build && mkdir -p fixtures/obsidian-hide-folders-test-vault/.obsidian/plugins/obsidian-hide-folders && cp -r dist/* fixtures/obsidian-hide-folders-test-vault/.obsidian/plugins/obsidian-hide-folders",
 		"version": "node version-bump.mjs && git add manifest.json versions.json"
 	},
 	"keywords": [],
