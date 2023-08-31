@@ -37,7 +37,7 @@ export default class HideFoldersPlugin extends Plugin {
   }
 
   getQuerySelectorStringForFolderName(folderName: string) {
-    if(folderName.startsWith("endsWith::")) {
+    if(folderName.toLowerCase().startsWith("endsWith::")) {
       return `[data-path$="${folderName.substring("endsWith::".length).trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}]`;
     } else {
       return `[data-path$="/${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}], [data-path="${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}]`;
