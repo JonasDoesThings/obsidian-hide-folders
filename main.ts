@@ -24,9 +24,7 @@ export default class HideFoldersPlugin extends Plugin {
     this.settings.attachmentFolderNames.forEach(folderName => {
       if(folderName.trim() === "") return;
 
-      const folderElements = document.querySelectorAll(
-        `[data-path$="/${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}], [data-path="${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}]`
-      );
+      const folderElements = document.querySelectorAll(this.getQuerySelectorStringForFolderName(folderName));
 
       folderElements.forEach((folder) => {
         if (!folder || !folder.parentElement) {
@@ -36,6 +34,14 @@ export default class HideFoldersPlugin extends Plugin {
         folder.parentElement.style.display = this.settings.areFoldersHidden ? "none" : "";
       });
     });
+  }
+
+  getQuerySelectorStringForFolderName(folderName: string) {
+    if(folderName.startsWith("endsWith::")) {
+      return `[data-path$="${folderName.substring("endsWith::".length).trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}]`;
+    } else {
+      return `[data-path$="/${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}], [data-path="${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}]`;
+    }
   }
 
   async toggleFunctionality() {
