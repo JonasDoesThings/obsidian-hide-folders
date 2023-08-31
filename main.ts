@@ -145,5 +145,12 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
           this.plugin.settings.areFoldersHidden = value;
           await this.plugin.saveSettings();
       }));
+
+    new Setting(containerEl)
+      .setName("GitHub")
+      .setDesc("Report Issues or Ideas, see the Source Code and Contribute.")
+      .addButton(button =>  button
+        .buttonEl.innerHTML = '<a href="https://github.com/JonasDoesThings/obsidian-hide-folders" target="_blank">obsidian-hide-folders</a>'
+      )
   }
 }
