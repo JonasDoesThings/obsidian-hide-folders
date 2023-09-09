@@ -96,6 +96,13 @@ export default class HideFoldersPlugin extends Plugin {
     });
     this.mutationObserver.observe(window.document, {childList: true, subtree: true});
 
+    // used for re-processing folders when a folder is newly created or renamed
+    this.registerEvent(this.app.vault.on("rename", () => {
+      // small delay is needed, otherwise the new folder won't get picked-up yet when calling processFolders
+      window.setTimeout(() => {
+        this.processFolders();
+      }, 10);
+    }))
   }
 
   onunload() {
