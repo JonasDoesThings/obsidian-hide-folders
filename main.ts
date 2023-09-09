@@ -18,8 +18,15 @@ export default class HideFoldersPlugin extends Plugin {
   statusBarItem: HTMLElement;
   mutationObserver: MutationObserver;
 
-  async processFolders() {
+  async processFolders(recheckPreviouslyHiddenFolders?: boolean) {
     if(this.settings.attachmentFolderNames.length === 0) return;
+
+    if(recheckPreviouslyHiddenFolders) {
+      document.querySelectorAll(".obsidian-hide-folders--hidden").forEach((folder) => {
+        folder.parentElement!.style.display = "";
+        folder.removeClass("obsidian-hide-folders--hidden");
+      })
+    }
 
     this.settings.attachmentFolderNames.forEach(folderName => {
       if(folderName.trim() === "") return;
@@ -31,6 +38,7 @@ export default class HideFoldersPlugin extends Plugin {
           return;
         }
 
+        folder.addClass("obsidian-hide-folders--hidden");
         folder.parentElement.style.display = this.settings.areFoldersHidden ? "none" : "";
       });
     });
@@ -99,6 +107,7 @@ export default class HideFoldersPlugin extends Plugin {
 
   async saveSettings() {
     await this.saveData(this.settings);
+    await this.processFolders(true);
   }
 }
 
