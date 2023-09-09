@@ -86,6 +86,7 @@ export default class HideFoldersPlugin extends Plugin {
     // This adds a settings tab so the user can configure various aspects of the plugin
     this.addSettingTab(new HideFoldersPluginSettingTab(this.app, this));
 
+    // used for re-processing folders when a folder is expanded in the file-navigator
     this.mutationObserver = new MutationObserver((mutationRecord) => {
       mutationRecord.forEach(record => {
         if(record.target?.parentElement?.classList.contains("nav-folder")) {
