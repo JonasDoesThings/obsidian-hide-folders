@@ -29,7 +29,7 @@ export default class HideFoldersPlugin extends Plugin {
     }
 
     this.settings.attachmentFolderNames.forEach(folderName => {
-      if(folderName.trim() === "") return;
+      if(this.getFolderNameWithoutPrefix(folderName) === "") return;
 
       const folderElements = document.querySelectorAll(this.getQuerySelectorStringForFolderName(folderName));
 
@@ -42,6 +42,16 @@ export default class HideFoldersPlugin extends Plugin {
         folder.parentElement.style.display = this.settings.areFoldersHidden ? "none" : "";
       });
     });
+  }
+
+  getFolderNameWithoutPrefix(folderName: string) {
+    if (folderName.toLowerCase().startsWith("endswith::")) {
+      return folderName.substring("endsWith::".length).trim();
+    } else if (folderName.toLowerCase().startsWith("startswith::")) {
+      return folderName.substring("startsWith::".length).trim();
+    } else {
+      return folderName;
+    }
   }
 
   getQuerySelectorStringForFolderName(folderName: string) {
