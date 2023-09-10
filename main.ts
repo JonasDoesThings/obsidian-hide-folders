@@ -58,7 +58,7 @@ export default class HideFoldersPlugin extends Plugin {
     if(folderName.toLowerCase().startsWith("endswith::")) {
       return `[data-path$="${this.getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}]`;
     } else if(folderName.toLowerCase().startsWith("startswith::")) {
-      return `[data-path^="${this.getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}], [data-path*="/${this.getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}]`;
+      return `.nav-folder-title[data-path^="${this.getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}], .nav-folder-title[data-path*="/${this.getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}]`;
     } else {
       return `[data-path$="/${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}], [data-path="${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}]`;
     }
