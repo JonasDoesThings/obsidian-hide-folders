@@ -146,7 +146,7 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
 
     new Setting(containerEl)
       .setName("Folders to hide")
-      .setDesc("The names of the folders to hide, one per line. Either exact folder-names or endsWith::FOLDERSUFFIX")
+      .setDesc("The names of the folders to hide, one per line. Either exact folder-names, startsWith::FOLDERPREFIX, or endsWith::FOLDERSUFFIX")
       .addTextArea(text => text
         .setPlaceholder("attachments\nendsWith::_attachments")
         .setValue(this.plugin.settings.attachmentFolderNames.join("\n"))

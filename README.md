@@ -10,8 +10,10 @@ Search in the community plugins menu of Obsidian for "Hide Folders" look for the
 
 ## Configuration
 Enter the list of folder names to hide in the settings menu, **one folder per line**.
-You can either enter exact folder-names or prefix the line with `endsWith::` if you want to filter-out all folders ending with a specific text.  
-(e.g. `endsWith::_trash`)
+You can match folders using three ways:
+* Exact folder-names (for example `attachments`)
+* All folders **starting with** a specific string (for example `startsWith::_` to filter out all folders whose name starting with a `_`)
+* All folders **ending with** a specific string (for example `endsWith::_trash` to filter out all folders whose name is ending with `_trash`)
 
 ![Screenshot of the Plugin Settings Screen in Obsidian.md](./docs/assets/settings-screenshot.png)  
 
