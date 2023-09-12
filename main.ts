@@ -25,7 +25,7 @@ export default class HideFoldersPlugin extends Plugin {
       document.querySelectorAll(".obsidian-hide-folders--hidden").forEach((folder) => {
         folder.parentElement!.style.display = "";
         folder.removeClass("obsidian-hide-folders--hidden");
-      })
+      });
     }
 
     this.settings.attachmentFolderNames.forEach(folderName => {
@@ -114,7 +114,7 @@ export default class HideFoldersPlugin extends Plugin {
       window.setTimeout(() => {
         this.processFolders();
       }, 10);
-    }))
+    }));
   }
 
   onunload() {
@@ -180,6 +180,6 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
       .setDesc("Report Issues or Ideas, see the Source Code and Contribute.")
       .addButton(button =>  button
         .buttonEl.innerHTML = '<a href="https://github.com/JonasDoesThings/obsidian-hide-folders" target="_blank">obsidian-hide-folders</a>'
-      )
+      );
   }
 }
