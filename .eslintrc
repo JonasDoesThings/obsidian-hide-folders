@@ -36,7 +36,8 @@
     ],
     "quotes": [
       "error",
-      "double"
+      "double",
+      {"avoidEscape": true}
     ]
   }
 }
