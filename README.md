@@ -3,6 +3,8 @@
 A simple plugin for [obsidian.md](https://obsidian.md) that hides configured folders, with the ability to toggle their visibility.  
 This can be used for hiding attachments folders when you don't need them.
 
+<a href="https://www.buymeacoffee.com/JonasDoesThings" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="27" width="116"></a>  
+
 ## Installation
 Search in the community plugins menu of Obsidian for "Hide Folders" look for the right plugin ("by JonasDoesThings"), there you can install the latest stable version.  
 
@@ -37,6 +39,10 @@ Using the command palette is also supported:
 ### Manually installing the plugin
 - Copy over the outputted `main.js`, `manifest.json` from the `dist/` folder to your vault `VaultFolder/.obsidian/plugins/obsidian-hide-folders/`.  
 -> Watch Out! You cannot copy-over the raw *main.**ts***. You need to run a build first and then copy over the produced *main.**js***.
+
+## Support my work
+I am maintaining free open source tools like this in my free-time.  
+If I helped you, and you want to give back, you can [buy me a coffee (green tea)](https://www.buymeacoffee.com/jonasdoesthings).
 
 ## License
 MIT License, see [LICENSE.md](./LICENSE.md)
