@@ -183,5 +183,12 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
       .addButton(button =>  button
         .buttonEl.innerHTML = '<a href="https://github.com/JonasDoesThings/obsidian-hide-folders" target="_blank">obsidian-hide-folders</a>'
       );
+
+    new Setting(containerEl)
+      .setName("Donate")
+      .setDesc("If you like this open-source plugin, consider a small tip to support my unpaid work.")
+      .addButton((button) => button
+        .buttonEl.outerHTML = "<a href='https://www.buymeacoffee.com/jonasdoesthings' target='_blank'><img src='https://cdn.buymeacoffee.com/buttons/default-orange.png' alt='Buy Me A Coffee' height='27' width='116'></a>"
+      );
   }
 }
