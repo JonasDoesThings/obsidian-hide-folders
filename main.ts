@@ -22,9 +22,9 @@ export default class HideFoldersPlugin extends Plugin {
     if(this.settings.attachmentFolderNames.length === 0) return;
 
     if(recheckPreviouslyHiddenFolders) {
-      document.querySelectorAll(".obsidian-hide-folders--hidden").forEach((folder) => {
-        folder.parentElement!.style.height = "";
-        folder.parentElement!.style.overflow = "";
+      document.querySelectorAll<HTMLElement>(".obsidian-hide-folders--hidden").forEach((folder) => {
+        folder.style.height = "";
+        folder.style.overflow = "";
         folder.removeClass("obsidian-hide-folders--hidden");
       });
     }
@@ -32,16 +32,18 @@ export default class HideFoldersPlugin extends Plugin {
     this.settings.attachmentFolderNames.forEach(folderName => {
       if(this.getFolderNameWithoutPrefix(folderName) === "") return;
 
-      const folderElements = document.querySelectorAll(this.getQuerySelectorStringForFolderName(folderName));
+      const folderElements = document.querySelectorAll<HTMLElement>([
+        this.getQuerySelectorStringForFolderName(folderName),
+      ].filter((o) => o != null).join(", "));
 
       folderElements.forEach((folder) => {
-        if (!folder || !folder.parentElement) {
+        if (!folder) {
           return;
         }
 
         folder.addClass("obsidian-hide-folders--hidden");
-        folder.parentElement.style.height = this.settings.areFoldersHidden ? "0" : "";
-        folder.parentElement.style.overflow = this.settings.areFoldersHidden ? "hidden" : "";
+        folder.style.height = this.settings.areFoldersHidden ? "0" : "";
+        folder.style.overflow = this.settings.areFoldersHidden ? "hidden" : "";
       });
     });
   }
@@ -58,11 +60,11 @@ export default class HideFoldersPlugin extends Plugin {
 
   getQuerySelectorStringForFolderName(folderName: string) {
     if(folderName.toLowerCase().startsWith("endswith::")) {
-      return `[data-path$="${this.getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}]`;
+      return `*:has(> [data-path$="${this.getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}])`;
     } else if(folderName.toLowerCase().startsWith("startswith::")) {
-      return `.nav-folder-title[data-path^="${this.getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}], .nav-folder-title[data-path*="/${this.getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}]`;
+      return `*:has(> .nav-folder-title[data-path^="${this.getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}]), *:has(> .nav-folder-title[data-path*="/${this.getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}])`;
     } else {
-      return `[data-path$="/${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}], [data-path="${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}]`;
+      return `*:has(> [data-path$="/${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}]), *:has(> [data-path="${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}])`;
     }
   }
 
