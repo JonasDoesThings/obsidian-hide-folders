@@ -3,12 +3,14 @@ import {App, Plugin, PluginSettingTab, setIcon, Setting} from "obsidian";
 interface HideFoldersPluginSettings {
   areFoldersHidden: boolean;
   matchCaseInsensitive: boolean;
+  addHiddenFoldersToObsidianIgnoreList: boolean;
   attachmentFolderNames: string[];
 }
 
 const DEFAULT_SETTINGS: HideFoldersPluginSettings = {
   areFoldersHidden: true,
   matchCaseInsensitive: true,
+  addHiddenFoldersToObsidianIgnoreList: false,
   attachmentFolderNames: ["attachments"],
 };
 
@@ -75,6 +77,53 @@ export default class HideFoldersPlugin extends Plugin {
     this.statusBarItem.innerHTML = this.settings.areFoldersHidden ? "Configured folders are hidden" : "";
     await this.processFolders();
     await this.saveSettings();
+    await this.updateObsidianIgnoreList();
+  }
+
+  createIgnoreListRegExpForFolderName(rawFolderName: string) {
+    const folderName = this.settings.matchCaseInsensitive
+      ? this.getFolderNameWithoutPrefix(rawFolderName).split("").map(c => c.toLowerCase() != c.toUpperCase() ? `[${c.toLowerCase()}${c.toUpperCase()}]` : c).join("")
+      : this.getFolderNameWithoutPrefix(rawFolderName);
+
+    if(rawFolderName.toLowerCase().startsWith("endswith::")) {
+      return `/(${folderName}$)|(${folderName}/)/`;
+    } else if(rawFolderName.toLowerCase().startsWith("startswith::")) {
+      return `/(^${folderName})|(/${folderName})/`;
+    } else {
+      return `/${folderName}/`;
+    }
+  }
+
+  async updateObsidianIgnoreList(processFeatureDisabling?: boolean) {
+    if(!this.settings.addHiddenFoldersToObsidianIgnoreList && !processFeatureDisabling) return;
+
+    if (this.settings.areFoldersHidden && !processFeatureDisabling) {
+      // @ts-ignore
+      if (!this.app.vault.config.userIgnoreFilters) this.app.vault.config.userIgnoreFilters = [];
+
+      this.settings.attachmentFolderNames.forEach(folderName => {
+        // @ts-ignore
+        if(this.app.vault.config.userIgnoreFilters.contains(this.createIgnoreListRegExpForFolderName(folderName))) return;
+
+        // @ts-ignore
+        this.app.vault.config.userIgnoreFilters.push(this.createIgnoreListRegExpForFolderName(folderName));
+        this.app.vault.trigger("config-changed");
+      });
+    } else {
+      this.settings.attachmentFolderNames.forEach(folderName => {
+        // @ts-ignore
+        this.app.vault.config.userIgnoreFilters?.remove(this.createIgnoreListRegExpForFolderName(folderName));
+        this.app.vault.trigger("config-changed");
+      });
+    }
+  }
+
+  async removeSpecificFoldersFromObsidianIgnoreList(folderNames: string[]) {
+    folderNames.forEach(folderName => {
+      // @ts-ignore
+      this.app.vault.config.userIgnoreFilters?.remove(this.createIgnoreListRegExpForFolderName(folderName));
+      this.app.vault.trigger("config-changed");
+    });
   }
 
   async onload() {
@@ -156,8 +205,12 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
         .setPlaceholder("attachments\nendsWith::_attachments")
         .setValue(this.plugin.settings.attachmentFolderNames.join("\n"))
         .onChange(async (value) => {
-          this.plugin.settings.attachmentFolderNames = value.split("\n");
+          const newSettingsValue = value.split("\n");
+          // remove removed folders from exclude list too
+          await this.plugin.removeSpecificFoldersFromObsidianIgnoreList(this.plugin.settings.attachmentFolderNames.filter(e => !newSettingsValue.includes(e)));
+          this.plugin.settings.attachmentFolderNames = newSettingsValue;
           await this.plugin.saveSettings();
+          await this.plugin.updateObsidianIgnoreList();
       }));
 
     new Setting(containerEl)
@@ -166,8 +219,11 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.matchCaseInsensitive)
         .onChange(async (value) => {
+          // remove all folders and re-add them later in the update function
+          await this.plugin.removeSpecificFoldersFromObsidianIgnoreList(this.plugin.settings.attachmentFolderNames);
           this.plugin.settings.matchCaseInsensitive = value;
           await this.plugin.saveSettings();
+          await this.plugin.updateObsidianIgnoreList();
       }));
 
     new Setting(containerEl)
@@ -178,6 +234,18 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
         .onChange(async (value) => {
           this.plugin.settings.areFoldersHidden = value;
           await this.plugin.saveSettings();
+          await this.plugin.updateObsidianIgnoreList();
+      }));
+
+   new Setting(containerEl)
+      .setName("Add Hidden Folders to Obsidian Exclusion-List")
+      .setDesc("Excluded files will be hidden in Search, Graph View, and Unlinked Mentions, less noticeable in Quick Switcher and link suggestions.")
+      .addToggle(toggle => toggle
+        .setValue(this.plugin.settings.addHiddenFoldersToObsidianIgnoreList)
+        .onChange(async (value) => {
+          this.plugin.settings.addHiddenFoldersToObsidianIgnoreList = value;
+          await this.plugin.saveSettings();
+          await this.plugin.updateObsidianIgnoreList(!value);
       }));
 
     new Setting(containerEl)
