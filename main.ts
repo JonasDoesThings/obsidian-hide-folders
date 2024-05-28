@@ -98,23 +98,25 @@ export default class HideFoldersPlugin extends Plugin {
     if(!this.settings.addHiddenFoldersToObsidianIgnoreList && !processFeatureDisabling) return;
 
     if (this.settings.areFoldersHidden && !processFeatureDisabling) {
-      // @ts-ignore
-      if (!this.app.vault.config.userIgnoreFilters) this.app.vault.config.userIgnoreFilters = [];
-
       this.settings.attachmentFolderNames.forEach(folderName => {
         // @ts-ignore
-        if(this.app.vault.config.userIgnoreFilters.contains(this.createIgnoreListRegExpForFolderName(folderName))) return;
+        if(this.app.vault.getConfig("userIgnoreFilters")?.contains(this.createIgnoreListRegExpForFolderName(folderName))) return;
 
         // @ts-ignore
-        this.app.vault.config.userIgnoreFilters.push(this.createIgnoreListRegExpForFolderName(folderName));
-        this.app.vault.trigger("config-changed");
+        this.app.vault.setConfig(
+          "userIgnoreFilters",
+          // @ts-ignore
+          [...(this.app.vault.getConfig("userIgnoreFilters") ?? []), this.createIgnoreListRegExpForFolderName(folderName)]
+        );
       });
     } else {
-      this.settings.attachmentFolderNames.forEach(folderName => {
+      const folderNameRegexes = this.settings.attachmentFolderNames.map(folderName => this.createIgnoreListRegExpForFolderName(folderName));
+      // @ts-ignore
+      this.app.vault.setConfig(
+        "userIgnoreFilters",
         // @ts-ignore
-        this.app.vault.config.userIgnoreFilters?.remove(this.createIgnoreListRegExpForFolderName(folderName));
-        this.app.vault.trigger("config-changed");
-      });
+        (this.app.vault.getConfig("userIgnoreFilters") as string[])?.filter((s) => !folderNameRegexes.includes(s))
+      );
     }
   }
 
