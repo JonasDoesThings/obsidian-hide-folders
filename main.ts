@@ -102,6 +102,7 @@ export default class HideFoldersPlugin extends Plugin {
 
     if (this.settings.areFoldersHidden && !processFeatureDisabling) {
       this.settings.attachmentFolderNames.forEach(folderName => {
+        if(this.getFolderNameWithoutPrefix(folderName).trim() === "") return;
         if(ignoreList.contains(this.createIgnoreListRegExpForFolderName(folderName))) return;
         ignoreList.push(this.createIgnoreListRegExpForFolderName(folderName));
       });
