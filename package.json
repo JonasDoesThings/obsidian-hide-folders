@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-hide-folders",
-	"version": "1.3.0",
+	"version": "1.4.0",
 	"description": "ObsidianMD plugin that hides & toggles configured folders (e.g. attachments folders).",
 	"main": "main.js",
 	"scripts": {
