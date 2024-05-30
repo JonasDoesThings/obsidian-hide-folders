@@ -1,9 +1,11 @@
 import {App, Plugin, PluginSettingTab, setIcon, Setting} from "obsidian";
+import {CompatQuickExplorer} from "./compat/compat-quickexplorer";
 
-interface HideFoldersPluginSettings {
+export interface HideFoldersPluginSettings {
   areFoldersHidden: boolean;
   matchCaseInsensitive: boolean;
   addHiddenFoldersToObsidianIgnoreList: boolean;
+  enableCompatQuickExplorer: boolean;
   attachmentFolderNames: string[];
 }
 
@@ -11,6 +13,7 @@ const DEFAULT_SETTINGS: HideFoldersPluginSettings = {
   areFoldersHidden: true,
   matchCaseInsensitive: true,
   addHiddenFoldersToObsidianIgnoreList: false,
+  enableCompatQuickExplorer: false,
   attachmentFolderNames: ["attachments"],
 };
 
@@ -32,10 +35,11 @@ export default class HideFoldersPlugin extends Plugin {
     }
 
     this.settings.attachmentFolderNames.forEach(folderName => {
-      if(this.getFolderNameWithoutPrefix(folderName) === "") return;
+      if(getFolderNameWithoutPrefix(folderName) === "") return;
 
       const folderElements = document.querySelectorAll<HTMLElement>([
         this.getQuerySelectorStringForFolderName(folderName),
+        this.settings.enableCompatQuickExplorer ? CompatQuickExplorer.getAdditionalDocumentSelectorStringForFolder?.(folderName, this.settings) : null,
       ].filter((o) => o != null).join(", "));
 
       folderElements.forEach((folder) => {
@@ -45,26 +49,17 @@ export default class HideFoldersPlugin extends Plugin {
 
         folder.addClass("obsidian-hide-folders--hidden");
         folder.style.height = this.settings.areFoldersHidden ? "0" : "";
+        folder.style.display = this.settings.areFoldersHidden ? "none" : "";
         folder.style.overflow = this.settings.areFoldersHidden ? "hidden" : "";
       });
     });
   }
 
-  getFolderNameWithoutPrefix(folderName: string) {
-    if (folderName.toLowerCase().startsWith("endswith::")) {
-      return folderName.substring("endsWith::".length).trim();
-    } else if (folderName.toLowerCase().startsWith("startswith::")) {
-      return folderName.substring("startsWith::".length).trim();
-    } else {
-      return folderName;
-    }
-  }
-
   getQuerySelectorStringForFolderName(folderName: string) {
     if(folderName.toLowerCase().startsWith("endswith::")) {
-      return `*:has(> [data-path$="${this.getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}])`;
+      return `*:has(> [data-path$="${getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}])`;
     } else if(folderName.toLowerCase().startsWith("startswith::")) {
-      return `*:has(> .nav-folder-title[data-path^="${this.getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}]), *:has(> .nav-folder-title[data-path*="/${this.getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}])`;
+      return `*:has(> .nav-folder-title[data-path^="${getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}]), *:has(> .nav-folder-title[data-path*="/${getFolderNameWithoutPrefix(folderName)}"${this.settings.matchCaseInsensitive ? " i" : ""}])`;
     } else {
       return `*:has(> [data-path$="/${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}]), *:has(> [data-path="${folderName.trim()}"${this.settings.matchCaseInsensitive ? " i" : ""}])`;
     }
@@ -82,8 +77,8 @@ export default class HideFoldersPlugin extends Plugin {
 
   createIgnoreListRegExpForFolderName(rawFolderName: string) {
     const folderName = this.settings.matchCaseInsensitive
-      ? this.getFolderNameWithoutPrefix(rawFolderName).split("").map(c => c.toLowerCase() != c.toUpperCase() ? `[${c.toLowerCase()}${c.toUpperCase()}]` : c).join("")
-      : this.getFolderNameWithoutPrefix(rawFolderName);
+      ? getFolderNameWithoutPrefix(rawFolderName).split("").map(c => c.toLowerCase() != c.toUpperCase() ? `[${c.toLowerCase()}${c.toUpperCase()}]` : c).join("")
+      : getFolderNameWithoutPrefix(rawFolderName);
 
     if(rawFolderName.toLowerCase().startsWith("endswith::")) {
       return `/(${folderName}$)|(${folderName}/)/`;
@@ -102,7 +97,7 @@ export default class HideFoldersPlugin extends Plugin {
 
     if (this.settings.areFoldersHidden && !processFeatureDisabling) {
       this.settings.attachmentFolderNames.forEach(folderName => {
-        if(this.getFolderNameWithoutPrefix(folderName).trim() === "") return;
+        if(getFolderNameWithoutPrefix(folderName).trim() === "") return;
         if(ignoreList.contains(this.createIgnoreListRegExpForFolderName(folderName))) return;
         ignoreList.push(this.createIgnoreListRegExpForFolderName(folderName));
       });
@@ -154,6 +149,13 @@ export default class HideFoldersPlugin extends Plugin {
       mutationRecord.forEach(record => {
         if(record.target?.parentElement?.classList.contains("nav-folder")) {
           this.processFolders();
+          return;
+        }
+
+        if(this.settings.enableCompatQuickExplorer) {
+          if(CompatQuickExplorer.shouldMutationRecordTriggerFolderReProcessing?.(record)) {
+            this.processFolders();
+          }
         }
       });
     });
@@ -192,8 +194,12 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
 
   display(): void {
     const {containerEl} = this;
-
     containerEl.empty();
+
+    const experimentalSettingsContainerEl = document.createElement("details");
+    const experimentalSettingsTitleEl = document.createElement("summary");
+    experimentalSettingsTitleEl.innerText = "Experimental & Unstable Settings";
+    experimentalSettingsContainerEl.appendChild(experimentalSettingsTitleEl);
 
     new Setting(containerEl)
       .setName("Folders to hide")
@@ -245,6 +251,18 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
           await this.plugin.updateObsidianIgnoreList(!value);
       }));
 
+    new Setting(experimentalSettingsContainerEl)
+      .setName("[EXPERIMENTAL] Compatibility: quick-explorer by pjeby")
+      .setDesc("[WARNING: UNSTABLE] Also hide hidden folders in the https://github.com/pjeby/quick-explorer plugin. Not affiliated with quick-explorer's author.")
+      .addToggle(toggle => toggle
+        .setValue(this.plugin.settings.enableCompatQuickExplorer)
+        .onChange(async (value) => {
+          this.plugin.settings.enableCompatQuickExplorer = value;
+          await this.plugin.saveSettings();
+        }));
+
+    containerEl.appendChild(document.createElement("br"));
+
     new Setting(containerEl)
       .setName("GitHub")
       .setDesc("Report Issues or Ideas, see the Source Code and Contribute.")
@@ -258,5 +276,18 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
       .addButton((button) => button
         .buttonEl.outerHTML = "<a href='https://www.buymeacoffee.com/jonasdoesthings' target='_blank'><img src='https://cdn.buymeacoffee.com/buttons/default-orange.png' alt='Buy Me A Coffee' height='27' width='116'></a>"
       );
+
+    containerEl.appendChild(document.createElement("br"));
+    containerEl.appendChild(experimentalSettingsContainerEl);
+  }
+}
+
+export function getFolderNameWithoutPrefix(folderName: string) {
+  if (folderName.toLowerCase().startsWith("endswith::")) {
+    return folderName.substring("endsWith::".length).trim();
+  } else if (folderName.toLowerCase().startsWith("startswith::")) {
+    return folderName.substring("startsWith::".length).trim();
+  } else {
+    return folderName;
   }
 }
