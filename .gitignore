@@ -18,7 +18,7 @@ dist
 
 # obsidian
 data.json
-fixtures/obsidian-hide-folders-test-vault/.obsidian/plugins
+fixtures/obsidian-hide-folders-test-vault/
 
 # Exclude macOS Finder (System Explorer) View States
 .DS_Store
