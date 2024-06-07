@@ -168,6 +168,11 @@ export default class HideFoldersPlugin extends Plugin {
         this.processFolders();
       }, 10);
     }));
+
+    this.app.workspace.onLayoutReady(() => {
+      if(!this.settings.areFoldersHidden) return;
+      this.processFolders();
+    });
   }
 
   onunload() {
