@@ -170,8 +170,12 @@ export default class HideFoldersPlugin extends Plugin {
     }));
 
     this.app.workspace.onLayoutReady(() => {
+      //@ts-ignore
+      this.app.workspace.ensureSideLeaf('file-explorer', "left", { active: !0 });
       if(!this.settings.areFoldersHidden) return;
-      this.processFolders();
+      window.setTimeout(() => {
+        this.processFolders();
+      }, 1000);
     });
   }
 
