@@ -5,6 +5,7 @@ export interface HideFoldersPluginSettings {
   areFoldersHidden: boolean;
   matchCaseInsensitive: boolean;
   addHiddenFoldersToObsidianIgnoreList: boolean;
+  hideBottomStatusBarIndicatorText: boolean;
   enableCompatQuickExplorer: boolean;
   attachmentFolderNames: string[];
 }
@@ -13,6 +14,7 @@ const DEFAULT_SETTINGS: HideFoldersPluginSettings = {
   areFoldersHidden: true,
   matchCaseInsensitive: true,
   addHiddenFoldersToObsidianIgnoreList: false,
+  hideBottomStatusBarIndicatorText: false,
   enableCompatQuickExplorer: false,
   attachmentFolderNames: ["attachments"],
 };
@@ -69,7 +71,9 @@ export default class HideFoldersPlugin extends Plugin {
     this.settings.areFoldersHidden = !this.settings.areFoldersHidden;
     this.ribbonIconButton.ariaLabel = this.settings.areFoldersHidden ? "Show hidden folders" : "Hide hidden folders again";
     setIcon(this.ribbonIconButton, this.settings.areFoldersHidden ? "eye" : "eye-off");
-    this.statusBarItem.innerHTML = this.settings.areFoldersHidden ? "Configured folders are hidden" : "";
+    if(this.statusBarItem) {
+      this.statusBarItem.innerHTML = this.settings.areFoldersHidden ? "Configured folders are hidden" : "";
+    }
     await this.processFolders();
     await this.saveSettings();
     await this.updateObsidianIgnoreList();
@@ -118,6 +122,14 @@ export default class HideFoldersPlugin extends Plugin {
     });
   }
 
+  createBottomStatusBarIndicatorTextItem() {
+    if(this.statusBarItem) return; // prevent multiple instantiations
+
+    // This adds a status bar item to the bottom of the app.
+    this.statusBarItem = this.addStatusBarItem();
+    this.statusBarItem.setText(this.settings.areFoldersHidden ? "Configured folders are hidden" : "");
+  }
+
   async onload() {
     console.log("loading plugin hide-folders");
 
@@ -128,9 +140,9 @@ export default class HideFoldersPlugin extends Plugin {
       this.toggleFunctionality();
     });
 
-    // This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-    this.statusBarItem = this.addStatusBarItem();
-    this.statusBarItem.setText(this.settings.areFoldersHidden ? "Attachment folders are hidden" : "");
+    if(!this.settings.hideBottomStatusBarIndicatorText) {
+      this.createBottomStatusBarIndicatorTextItem();
+    }
 
     // This adds a simple command that can be triggered anywhere
     this.addCommand({
@@ -256,6 +268,21 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
           this.plugin.settings.addHiddenFoldersToObsidianIgnoreList = value;
           await this.plugin.saveSettings();
           await this.plugin.updateObsidianIgnoreList(!value);
+      }));
+
+   new Setting(containerEl)
+      .setName("Hide bottom status-bar \"Folders are Hidden\" indicator")
+      .setDesc("If enable there will be no bottom-bar indicator-text telling you if this plugin is active.")
+      .addToggle(toggle => toggle
+        .setValue(this.plugin.settings.hideBottomStatusBarIndicatorText)
+        .onChange(async (value) => {
+          this.plugin.settings.hideBottomStatusBarIndicatorText = value;
+          if(value) {
+            this.plugin.statusBarItem?.remove();
+          } else {
+            this.plugin.createBottomStatusBarIndicatorTextItem();
+          }
+          await this.plugin.saveSettings();
       }));
 
     new Setting(experimentalSettingsContainerEl)
