@@ -22,7 +22,7 @@ const DEFAULT_SETTINGS: HideFoldersPluginSettings = {
 export default class HideFoldersPlugin extends Plugin {
   settings: HideFoldersPluginSettings;
   ribbonIconButton: HTMLElement;
-  statusBarItem: HTMLElement;
+  statusBarItem?: HTMLElement;
   mutationObserver: MutationObserver;
 
   async processFolders(recheckPreviouslyHiddenFolders?: boolean) {
@@ -279,6 +279,7 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
           this.plugin.settings.hideBottomStatusBarIndicatorText = value;
           if(value) {
             this.plugin.statusBarItem?.remove();
+            this.plugin.statusBarItem = undefined;
           } else {
             this.plugin.createBottomStatusBarIndicatorTextItem();
           }
