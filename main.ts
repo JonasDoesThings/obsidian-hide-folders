@@ -25,8 +25,10 @@ export default class HideFoldersPlugin extends Plugin {
   statusBarItem?: HTMLElement;
   mutationObserver: MutationObserver;
 
+  callCount = 0;
   async processFolders(recheckPreviouslyHiddenFolders?: boolean) {
     if(this.settings.attachmentFolderNames.length === 0) return;
+    console.log(`processFolders called ${++this.callCount} times`);
 
     if(recheckPreviouslyHiddenFolders) {
       document.querySelectorAll<HTMLElement>(".obsidian-hide-folders--hidden").forEach((folder) => {
@@ -158,18 +160,21 @@ export default class HideFoldersPlugin extends Plugin {
 
     // used for re-processing folders when a folder is expanded in the file-navigator
     this.mutationObserver = new MutationObserver((mutationRecord) => {
-      mutationRecord.forEach(record => {
-        if(record.target?.parentElement?.classList.contains("nav-folder")) {
-          this.processFolders();
-          return;
-        }
+      const feClasses = [
+        "nav-folder",
+        "nav-files-container",
+      ];
 
-        if(this.settings.enableCompatQuickExplorer) {
-          if(CompatQuickExplorer.shouldMutationRecordTriggerFolderReProcessing?.(record)) {
-            this.processFolders();
-          }
-        }
+      // check if any of the mutationRecords fulfills the conditions for us to call processFolders
+      const shouldTriggerProcessFolders = mutationRecord.some((record) => {
+        if(feClasses.some(c => record.target?.parentElement?.classList.contains(c))) return true;
+        if(this.settings.enableCompatQuickExplorer && CompatQuickExplorer.shouldMutationRecordTriggerFolderReProcessing?.(record)) return true;
+
+        return false;
       });
+
+      if(!shouldTriggerProcessFolders) return;
+      this.processFolders();
     });
     this.mutationObserver.observe(window.document, {childList: true, subtree: true});
 
