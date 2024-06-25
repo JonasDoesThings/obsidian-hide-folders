@@ -1,4 +1,4 @@
-import {App, Plugin, PluginSettingTab, setIcon, Setting} from "obsidian";
+import {App, Plugin, PluginSettingTab, setIcon, Setting, debounce} from "obsidian";
 import {CompatQuickExplorer} from "./compat/compat-quickexplorer";
 
 export interface HideFoldersPluginSettings {
@@ -25,7 +25,7 @@ export default class HideFoldersPlugin extends Plugin {
   statusBarItem?: HTMLElement;
   mutationObserver: MutationObserver;
 
-  async processFolders(recheckPreviouslyHiddenFolders?: boolean) {
+  private processFolders = debounce(async (recheckPreviouslyHiddenFolders?: boolean) => {
     if(this.settings.attachmentFolderNames.length === 0) return;
 
     if(recheckPreviouslyHiddenFolders) {
@@ -55,7 +55,7 @@ export default class HideFoldersPlugin extends Plugin {
         folder.style.overflow = this.settings.areFoldersHidden ? "hidden" : "";
       });
     });
-  }
+  }, 10, false);
 
   getQuerySelectorStringForFolderName(folderName: string) {
     if(folderName.toLowerCase().startsWith("endswith::")) {
@@ -158,18 +158,21 @@ export default class HideFoldersPlugin extends Plugin {
 
     // used for re-processing folders when a folder is expanded in the file-navigator
     this.mutationObserver = new MutationObserver((mutationRecord) => {
-      mutationRecord.forEach(record => {
-        if(record.target?.parentElement?.classList.contains("nav-folder")) {
-          this.processFolders();
-          return;
-        }
+      const feClasses = [
+        "nav-folder",
+        "nav-files-container",
+      ];
 
-        if(this.settings.enableCompatQuickExplorer) {
-          if(CompatQuickExplorer.shouldMutationRecordTriggerFolderReProcessing?.(record)) {
-            this.processFolders();
-          }
-        }
+      // check if any of the mutationRecords fulfills the conditions for us to call processFolders
+      const shouldTriggerProcessFolders = mutationRecord.some((record) => {
+        if(feClasses.some(c => record.target?.parentElement?.classList.contains(c))) return true;
+        if(this.settings.enableCompatQuickExplorer && CompatQuickExplorer.shouldMutationRecordTriggerFolderReProcessing?.(record)) return true;
+
+        return false;
       });
+
+      if(!shouldTriggerProcessFolders) return;
+      this.processFolders();
     });
     this.mutationObserver.observe(window.document, {childList: true, subtree: true});
 
