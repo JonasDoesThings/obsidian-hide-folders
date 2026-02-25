@@ -1,14 +1,20 @@
-# obsidian-hide-folders
+# obsidian-hide-folders (fork)
 
-A simple plugin for [obsidian.md](https://obsidian.md) that hides configured folders, with the ability to toggle their visibility.  
-This can be used for hiding attachments folders when you don't need them.
+A fork of [JonasDoesThings/obsidian-hide-folders](https://github.com/JonasDoesThings/obsidian-hide-folders) — a plugin for [obsidian.md](https://obsidian.md) that hides configured folders, with the ability to toggle their visibility.
 
-<a href="https://www.buymeacoffee.com/JonasDoesThings" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="27" width="116"></a>  
+## What's different in this fork?
+
+### Hide empty folders
+A new setting that automatically hides any folder that contains no files. Folders reappear as soon as files are added to them.
+
+This is useful for folders like "Inbox" that are usually empty and just clutter the file tree — they stay hidden until there's actually something in them.
+
+- **10-second grace period** — when a folder becomes empty (e.g. you delete the last file), it stays visible for 10 seconds so you have time to add new files before it disappears.
+- **Explicit hide list takes priority** — folders in the "Folders to hide" list are always hidden regardless of whether they have content.
+- **Recursive check** — a folder containing only empty subfolders is still considered empty.
 
 ## Installation
-Search in the community plugins menu of Obsidian for "Hide Folders" look for the right plugin ("by JonasDoesThings"), there you can install the latest stable version.  
-
-![Screenshot of the Plugin Installation Menu](./docs/assets/installation-screenshot.png)
+This fork is not available in the Obsidian community plugin directory. To install, download `main.js` and `manifest.json` from the [latest release](https://github.com/titandrive/obsidian-hide-folders/releases) and copy them to your vault at `VaultFolder/.obsidian/plugins/hide-folders/`.
 
 ## Configuration
 Enter the list of folder names to hide in the settings menu, **one folder per line**.
@@ -17,13 +23,13 @@ You can match folders using three ways:
 * All folders **starting with** a specific string (for example `startsWith::_` to filter out all folders whose name starting with a `_`)
 * All folders **ending with** a specific string (for example `endsWith::_trash` to filter out all folders whose name is ending with `_trash`)
 
-![Screenshot of the Plugin Settings Screen in Obsidian.md](./docs/assets/settings-screenshot.png)  
+![Screenshot of the Plugin Settings Screen in Obsidian.md](./docs/assets/settings-screenshot.png)
 
-You can then also use a sidebar button to quickly toggle the visibility without having to enter the settings menu:  
+You can then also use a sidebar button to quickly toggle the visibility without having to enter the settings menu:
 
 ![Screenshot of the Plugin's Sidebar Button in Obsidian.md](docs/assets/sidebar-screenshot.png)
 
-Using the command palette is also supported:  
+Using the command palette is also supported:
 
 ![Screenshot of the Plugin's Command Palette Action in Obsidian..md](docs/assets/command-palette-screenshot.png)
 
@@ -37,12 +43,8 @@ Using the command palette is also supported:
 - `npm run build` to do a one-off build of the project, which produces the files needed for manually installing the plugin.
 
 ### Manually installing the plugin
-- Copy over the outputted `main.js`, `manifest.json` from the `dist/` folder to your vault `VaultFolder/.obsidian/plugins/obsidian-hide-folders/`.  
+- Copy over the outputted `main.js`, `manifest.json` from the `dist/` folder to your vault `VaultFolder/.obsidian/plugins/obsidian-hide-folders/`.
 -> Watch Out! You cannot copy-over the raw *main.**ts***. You need to run a build first and then copy over the produced *main.**js***.
-
-## Support my work
-I am maintaining free open source tools like this in my free-time.  
-If I helped you, and you want to give back, you can [buy me a coffee (green tea)](https://www.buymeacoffee.com/jonasdoesthings).
 
 ## License
 MIT License, see [LICENSE.md](./LICENSE.md)
