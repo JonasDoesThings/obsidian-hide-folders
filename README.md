@@ -30,11 +30,11 @@ Using the command palette is also supported:
 ## Development
 ### Setup
 - Clone this repo.
-- `npm i` or `yarn` to install dependencies
-- `npm run dev` to start compilation in watch mode.
+- `pnpm i` to install dependencies
+- `pnpm dev` to start compilation in watch mode.
 
 ### Building
-- `npm run build` to do a one-off build of the project, which produces the files needed for manually installing the plugin.
+- `pnpm build` to do a one-off build of the project, which produces the files needed for manually installing the plugin.
 
 ### Manually installing the plugin
 - Copy over the outputted `main.js`, `manifest.json` from the `dist/` folder to your vault `VaultFolder/.obsidian/plugins/obsidian-hide-folders/`.  
