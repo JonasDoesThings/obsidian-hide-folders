@@ -29,7 +29,7 @@ export default class HideFoldersPlugin extends Plugin {
     if(this.settings.attachmentFolderNames.length === 0) return;
 
     if(recheckPreviouslyHiddenFolders) {
-      document.querySelectorAll<HTMLElement>(".obsidian-hide-folders--hidden").forEach((folder) => {
+      activeDocument.querySelectorAll<HTMLElement>(".obsidian-hide-folders--hidden").forEach((folder) => {
         folder.style.height = "";
         folder.style.overflow = "";
         folder.removeClass("obsidian-hide-folders--hidden");
@@ -39,7 +39,7 @@ export default class HideFoldersPlugin extends Plugin {
     this.settings.attachmentFolderNames.forEach(folderName => {
       if(getFolderNameWithoutPrefix(folderName) === "") return;
 
-      const folderElements = document.querySelectorAll<HTMLElement>([
+      const folderElements = activeDocument.querySelectorAll<HTMLElement>([
         this.getQuerySelectorStringForFolderName(folderName),
         this.settings.enableCompatQuickExplorer ? CompatQuickExplorer.getAdditionalDocumentSelectorStringForFolder?.(folderName, this.settings) : null,
       ].filter((o) => o != null).join(", "));
@@ -74,7 +74,7 @@ export default class HideFoldersPlugin extends Plugin {
     if(this.statusBarItem) {
       this.statusBarItem.innerHTML = this.settings.areFoldersHidden ? "Configured folders are hidden" : "";
     }
-    await this.processFolders();
+    this.processFolders();
     await this.saveSettings();
     await this.updateObsidianIgnoreList();
   }
@@ -137,7 +137,7 @@ export default class HideFoldersPlugin extends Plugin {
 
     // This creates an icon in the left ribbon.
     this.ribbonIconButton = this.addRibbonIcon(this.settings.areFoldersHidden ? "eye" : "eye-off", this.settings.areFoldersHidden ? "Show hidden folders" : "Hide hidden folders again", (evt: MouseEvent) => {
-      this.toggleFunctionality();
+      void this.toggleFunctionality();
     });
 
     if(!this.settings.hideBottomStatusBarIndicatorText) {
@@ -149,7 +149,7 @@ export default class HideFoldersPlugin extends Plugin {
       id: "toggle-attachment-folders",
       name: "Toggle visibility of hidden folders",
       callback: () => {
-        this.toggleFunctionality();
+        void this.toggleFunctionality();
       },
     });
 
@@ -202,7 +202,7 @@ export default class HideFoldersPlugin extends Plugin {
 
   async saveSettings() {
     await this.saveData(this.settings);
-    await this.processFolders(true);
+    this.processFolders(true);
   }
 }
 
@@ -218,15 +218,17 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
     const {containerEl} = this;
     containerEl.empty();
 
-    const experimentalSettingsContainerEl = document.createElement("details");
-    const experimentalSettingsTitleEl = document.createElement("summary");
+    const experimentalSettingsContainerEl = activeDocument.createEl("details");
+    const experimentalSettingsTitleEl = activeDocument.createEl("summary");
     experimentalSettingsTitleEl.innerText = "Experimental & Unstable Settings";
     experimentalSettingsContainerEl.appendChild(experimentalSettingsTitleEl);
 
     new Setting(containerEl)
       .setName("Folders to hide")
+      // eslint-disable-next-line obsidianmd/ui/sentence-case
       .setDesc("The names of the folders to hide, one per line. Either exact folder-names, startsWith::FOLDERPREFIX, or endsWith::FOLDERSUFFIX")
       .addTextArea(text => text
+        // eslint-disable-next-line obsidianmd/ui/sentence-case
         .setPlaceholder("attachments\nendsWith::_attachments")
         .setValue(this.plugin.settings.attachmentFolderNames.join("\n"))
         .onChange(async (value) => {
@@ -239,7 +241,8 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
       }));
 
     new Setting(containerEl)
-      .setName("Ignore Upper/lowercase")
+      .setName("Ignore upper/lowercase")
+      // eslint-disable-next-line obsidianmd/ui/sentence-case
       .setDesc("If enabled, 'SOMEFOLDER', 'someFolder', or 'sOmeFoldEr' will all be treated the same and matched.")
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.matchCaseInsensitive)
@@ -263,8 +266,8 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
       }));
 
    new Setting(containerEl)
-      .setName("Add Hidden Folders to Obsidian Exclusion-List")
-      .setDesc("Excluded files will be hidden in Search, Graph View, and Unlinked Mentions, less noticeable in Quick Switcher and link suggestions.")
+      .setName("Add hidden folders to Obsidian exclusion-list")
+      .setDesc("Excluded files will be hidden in search, graph view, and unlinked mentions, less noticeable in quick switcher and link suggestions.")
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.addHiddenFoldersToObsidianIgnoreList)
         .onChange(async (value) => {
@@ -290,8 +293,9 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
       }));
 
     new Setting(experimentalSettingsContainerEl)
-      .setName("[EXPERIMENTAL] Compatibility: quick-explorer by pjeby")
-      .setDesc("[WARNING: UNSTABLE] Also hide hidden folders in the https://github.com/pjeby/quick-explorer plugin. Not affiliated with quick-explorer's author.")
+      .setName("Compatibility: quick-explorer by pjeby")
+      // eslint-disable-next-line obsidianmd/ui/sentence-case
+      .setDesc("Also hide hidden folders in the https://github.com/pjeby/quick-explorer plugin. Not affiliated with quick-explorer's author.")
       .addToggle(toggle => toggle
         .setValue(this.plugin.settings.enableCompatQuickExplorer)
         .onChange(async (value) => {
@@ -299,23 +303,23 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
         }));
 
-    containerEl.appendChild(document.createElement("br"));
+    containerEl.appendChild(activeDocument.createEl("br"));
 
     new Setting(containerEl)
       .setName("GitHub")
-      .setDesc("Report Issues or Ideas, see the Source Code and Contribute.")
+      .setDesc("Report issues or ideas, see the source code and contribute.")
       .addButton(button =>  button
-        .buttonEl.innerHTML = '<a href="https://github.com/JonasDoesThings/obsidian-hide-folders" target="_blank">obsidian-hide-folders</a>'
+        .buttonEl.innerHTML = '<a href="https://github.com/JonasDoesThings/obsidian-hide-folders" target="_blank">obsidian-hide-folders</a>',
       );
 
     new Setting(containerEl)
       .setName("Donate")
       .setDesc("If you like this open-source plugin, consider a small tip to support my unpaid work.")
       .addButton((button) => button
-        .buttonEl.outerHTML = "<a href='https://www.buymeacoffee.com/jonasdoesthings' target='_blank'><img src='https://cdn.buymeacoffee.com/buttons/default-orange.png' alt='Buy Me A Coffee' height='27' width='116'></a>"
+        .buttonEl.outerHTML = "<a href='https://www.buymeacoffee.com/jonasdoesthings' target='_blank'><img src='https://cdn.buymeacoffee.com/buttons/default-orange.png' alt='Buy Me A Coffee' height='27' width='116'></a>",
       );
 
-    containerEl.appendChild(document.createElement("br"));
+    containerEl.appendChild(activeDocument.createEl("br"));
     containerEl.appendChild(experimentalSettingsContainerEl);
   }
 }
