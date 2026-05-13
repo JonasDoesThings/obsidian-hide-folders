@@ -20,10 +20,10 @@ const DEFAULT_SETTINGS: HideFoldersPluginSettings = {
 };
 
 export default class HideFoldersPlugin extends Plugin {
-  settings: HideFoldersPluginSettings;
-  ribbonIconButton: HTMLElement;
+  settings!: HideFoldersPluginSettings;
+  ribbonIconButton!: HTMLElement;
   statusBarItem?: HTMLElement;
-  mutationObserver: MutationObserver;
+  mutationObserver!: MutationObserver;
 
   private processFolders = debounce(async (recheckPreviouslyHiddenFolders?: boolean) => {
     if(this.settings.attachmentFolderNames.length === 0) return;
