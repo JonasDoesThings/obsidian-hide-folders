@@ -30,8 +30,7 @@ export default class HideFoldersPlugin extends Plugin {
 
     if(recheckPreviouslyHiddenFolders) {
       activeDocument.querySelectorAll<HTMLElement>(".obsidian-hide-folders--hidden").forEach((folder) => {
-        folder.style.height = "";
-        folder.style.overflow = "";
+        folder.setCssProps({ height: "", overflow: "" });
         folder.removeClass("obsidian-hide-folders--hidden");
       });
     }
@@ -50,9 +49,11 @@ export default class HideFoldersPlugin extends Plugin {
         }
 
         folder.addClass("obsidian-hide-folders--hidden");
-        folder.style.height = this.settings.areFoldersHidden ? "0" : "";
-        folder.style.display = this.settings.areFoldersHidden ? "none" : "";
-        folder.style.overflow = this.settings.areFoldersHidden ? "hidden" : "";
+        folder.setCssProps({
+          height: this.settings.areFoldersHidden ? "0" : "",
+          display: this.settings.areFoldersHidden ? "none" : "",
+          overflow: this.settings.areFoldersHidden ? "hidden" : "",
+        });
       });
     });
   }, 10, false);
