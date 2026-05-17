@@ -221,6 +221,7 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
 
     const experimentalSettingsContainerEl = activeDocument.createEl("details");
     const experimentalSettingsTitleEl = activeDocument.createEl("summary");
+    // eslint-disable-next-line obsidianmd/ui/sentence-case
     experimentalSettingsTitleEl.innerText = "Experimental & Unstable Settings";
     experimentalSettingsContainerEl.appendChild(experimentalSettingsTitleEl);
 
@@ -278,6 +279,7 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
       }));
 
    new Setting(containerEl)
+     // eslint-disable-next-line obsidianmd/ui/sentence-case
       .setName("Hide bottom status-bar \"Folders are Hidden\" indicator")
       .setDesc("If enable there will be no bottom-bar indicator-text telling you if this plugin is active.")
       .addToggle(toggle => toggle
