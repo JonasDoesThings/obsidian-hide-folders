@@ -227,12 +227,6 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
     const {containerEl} = this;
     containerEl.empty();
 
-    const experimentalSettingsContainerEl = activeDocument.createEl("details");
-    const experimentalSettingsTitleEl = activeDocument.createEl("summary");
-    // eslint-disable-next-line obsidianmd/ui/sentence-case
-    experimentalSettingsTitleEl.innerText = "Experimental & Unstable Settings";
-    experimentalSettingsContainerEl.appendChild(experimentalSettingsTitleEl);
-
     new Setting(containerEl)
       .setName("Folders to hide")
       // eslint-disable-next-line obsidianmd/ui/sentence-case
@@ -303,18 +297,7 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
           await this.plugin.saveSettings();
       }));
 
-    new Setting(experimentalSettingsContainerEl)
-      .setName("Compatibility: quick-explorer by pjeby")
-      // eslint-disable-next-line obsidianmd/ui/sentence-case
-      .setDesc("Also hide hidden folders in the https://github.com/pjeby/quick-explorer plugin. Not affiliated with quick-explorer's author.")
-      .addToggle(toggle => toggle
-        .setValue(this.plugin.settings.enableCompatQuickExplorer)
-        .onChange(async (value) => {
-          this.plugin.settings.enableCompatQuickExplorer = value;
-          await this.plugin.saveSettings();
-        }));
-
-    containerEl.appendChild(activeDocument.createEl("br"));
+    containerEl.createEl("br");
 
     new Setting(containerEl)
       .setName("GitHub")
@@ -330,8 +313,24 @@ class HideFoldersPluginSettingTab extends PluginSettingTab {
         .buttonEl.outerHTML = "<a href='https://www.buymeacoffee.com/jonasdoesthings' target='_blank'><img src='https://cdn.buymeacoffee.com/buttons/default-orange.png' alt='Buy Me A Coffee' height='27' width='116'></a>",
       );
 
-    containerEl.appendChild(activeDocument.createEl("br"));
-    containerEl.appendChild(experimentalSettingsContainerEl);
+    containerEl.createEl("br");
+
+    const experimentalSettingsContainerEl = containerEl.createEl("details");
+    const experimentalSettingsTitleEl = experimentalSettingsContainerEl.createEl("summary");
+    // eslint-disable-next-line obsidianmd/ui/sentence-case
+    experimentalSettingsTitleEl.innerText = "Experimental & Unstable Settings";
+
+    new Setting(experimentalSettingsContainerEl)
+      .setName("Compatibility: quick-explorer by pjeby")
+      // eslint-disable-next-line obsidianmd/ui/sentence-case
+      .setDesc("Also hide hidden folders in the https://github.com/pjeby/quick-explorer plugin. Not affiliated with quick-explorer's author.")
+      .addToggle(toggle => toggle
+        .setValue(this.plugin.settings.enableCompatQuickExplorer)
+        .onChange(async (value) => {
+          this.plugin.settings.enableCompatQuickExplorer = value;
+          await this.plugin.saveSettings();
+        }));
+
   }
 }
 
