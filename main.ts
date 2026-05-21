@@ -140,8 +140,6 @@ export default class HideFoldersPlugin extends Plugin {
   }
 
   async onload() {
-    console.log("loading plugin hide-folders");
-
     await this.loadSettings();
 
     // This creates an icon in the left ribbon.
