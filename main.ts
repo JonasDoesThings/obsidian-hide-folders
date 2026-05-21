@@ -96,6 +96,10 @@ export default class HideFoldersPlugin extends Plugin {
 
   async updateObsidianIgnoreList(processFeatureDisabling?: boolean) {
     if(!this.settings.addHiddenFoldersToObsidianIgnoreList && !processFeatureDisabling) return;
+    if(!("getConfig" in this.app.vault && "setConfig" in this.app.vault)) {
+      console.error("[obsidian-hide-folders] failed to update obsidian ignore list. the API surface probably changed in an update. please report to https://github.com/JonasDoesThings/obsidian-hide-folders/issues");
+      return;
+    }
 
     // @ts-ignore
     let ignoreList = (this.app.vault.getConfig("userIgnoreFilters") ?? []) as string[];
@@ -116,11 +120,15 @@ export default class HideFoldersPlugin extends Plugin {
   }
 
   async removeSpecificFoldersFromObsidianIgnoreList(folderNames: string[]) {
+    if(!("config" in this.app.vault)) {
+      console.error("[obsidian-hide-folders] failed to remove from obsidian ignore list. the API surface probably changed in an update. please report to https://github.com/JonasDoesThings/obsidian-hide-folders/issues");
+      return;
+    }
+
     folderNames.forEach(folderName => {
-      // @ts-ignore
-      this.app.vault.config.userIgnoreFilters?.remove(this.createIgnoreListRegExpForFolderName(folderName));
-      this.app.vault.trigger("config-changed");
+      (this.app.vault as {config?: {userIgnoreFilters?: string[]}}).config?.userIgnoreFilters?.remove(this.createIgnoreListRegExpForFolderName(folderName));
     });
+    this.app.vault.trigger("config-changed");
   }
 
   createBottomStatusBarIndicatorTextItem() {
