@@ -73,7 +73,7 @@ export default class HideFoldersPlugin extends Plugin {
     this.ribbonIconButton.ariaLabel = this.settings.areFoldersHidden ? "Show hidden folders" : "Hide hidden folders again";
     setIcon(this.ribbonIconButton, this.settings.areFoldersHidden ? "eye" : "eye-off");
     if(this.statusBarItem) {
-      this.statusBarItem.innerHTML = this.settings.areFoldersHidden ? "Configured folders are hidden" : "";
+      this.statusBarItem.setText(this.settings.areFoldersHidden ? "Configured folders are hidden" : "");
     }
     this.processFolders();
     await this.saveSettings();
