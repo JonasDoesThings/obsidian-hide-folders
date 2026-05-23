@@ -143,7 +143,7 @@ export default class HideFoldersPlugin extends Plugin {
     await this.loadSettings();
 
     // This creates an icon in the left ribbon.
-    this.ribbonIconButton = this.addRibbonIcon(this.settings.areFoldersHidden ? "eye" : "eye-off", this.settings.areFoldersHidden ? "Show hidden folders" : "Hide hidden folders again", (evt: MouseEvent) => {
+    this.ribbonIconButton = this.addRibbonIcon(this.settings.areFoldersHidden ? "eye" : "eye-off", this.settings.areFoldersHidden ? "Show hidden folders" : "Hide hidden folders again", () => {
       void this.toggleFunctionality();
     });
 
