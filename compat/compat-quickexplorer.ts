@@ -17,16 +17,18 @@ export const CompatQuickExplorer: DocumentSelectorCompatLayer = {
 
   shouldMutationRecordTriggerFolderReProcessing: (record) => {
     for (const addedNode of record.addedNodes) {
-      // @ts-ignore
-      if (!addedNode.tagName) continue; // not an element
-      // @ts-ignore
+      if(!(addedNode.instanceOf(Element))) continue;
+      if (!addedNode.tagName) continue;
+
       if(addedNode.classList.contains("qe-popup-menu")) {
         // only changing the position of the most top-level menu is enough
-        const firstQePopUpMenu = document.getElementsByClassName("qe-popup-menu")[0] as HTMLElement;
+        const firstQePopUpMenu = activeDocument.getElementsByClassName("qe-popup-menu")[0] as HTMLElement;
 
         if(!firstQePopUpMenu) return true;
-        firstQePopUpMenu.style.top = "";
-        firstQePopUpMenu.style.bottom = "1.7rem";
+        firstQePopUpMenu.setCssProps({
+          top: "",
+          bottom: "1.7rem",
+        });
 
         return true;
       }
